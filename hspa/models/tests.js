@@ -62,4 +62,60 @@ exports.insertTest = async function (pool, req, res) {
                     client.release()
                   }
                 }
+ 
+ exports.gatewaySearch = async function(pool, req, res) {
+  const client = await pool.connect()
+  if (req.body.intent.fulfillment.type!="DIAGNOSTIC")
+  {
+    res.status(400).send({error: "type not supported"})
+  }
+  var data = {
+    "catalog": {
+      "descriptor": {
+        "name": "Raseet HSPA"
+      }
+  }
+}
+  var items = []
+  var fulfillments =[]
 
+  tests= await client.query('select * FROM tests left join instructions on tests.instruction=instructions.id');
+  for (var i in tests.rows)
+  {
+    var item = {
+      id:tests.rows[i].id,
+      "descriptor": {
+        "name": tests.rows[i].name
+      },
+      "fulfillment_id": "815a0394-1fd4-4466-b95e-7ebbe1fb3da4",
+        "price": {
+          "currency": "INR",
+          "value": tests.rows[i].price
+        },
+        "quantity": {
+          "available": "1"
+        },
+        "tags ": {
+          "@abdm/gov.in/instructions": tests.rows[i].desc
+        }
+    }
+    var fulfillment={
+      "id": "815a0394-1fd4-4466-b95e-7ebbe1fb3da4",
+        "type": "DIAGNOSTIC",
+        "provider_id":1,
+        "agent": {
+          "id": "123123",
+          "name": "shiva path lab"
+        },
+        "tags ": {
+          "@abdm/gov.in/pincode": "201014"
+        }
+    }
+    items.push(item)
+    fulfillments.push(fulfillment)
+  }
+  data['items']=items
+  data['fulfillments']=fulfillments
+  
+  res.status(400).send(data)
+}
