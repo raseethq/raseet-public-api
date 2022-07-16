@@ -1,6 +1,7 @@
 node_modules
 
 # Developer specific
+.env
 .env.prod
 .env.development
 
