@@ -54,7 +54,9 @@ router.post('/insertorder', (req, res, next) => {
 router.get('/gettests', (req, res, next) => {
   tests.getTests(pool,req,res)
 });
-
+router.get('/getorders', (req, res, next) => {
+  order.getOrders(pool,req,res)
+});
 //Next two routes are to be kept together
 router.post('/search', async (req, res, next) => {
   console.log(req.body)

@@ -72,3 +72,42 @@ exports.insertOrder = async function (pool, req, res) {
           }
         }
 
+        exports.getOrders = async function (pool, req, res) {
+          const client = await pool.connect()
+          try {
+            client.query('START TRANSACTION')
+            var tests=null
+            orders=[]
+            if(req.query.agent_id){
+
+              order = await client.query('select * FROM orders where agent_id = $1',[req.query.agent_id]);
+            } else{
+              order= await client.query('select * FROM orders');
+            }
+            console.log(order.rows)
+            for (var i in order.rows)
+            {
+              agent=await client.query('select * FROM users where id = $1',[order.rows[i].agent_id]);
+              items = await client.query('select * FROM order_items where order_id = $1',[order.rows[i].id]);
+              payment =  await client.query('select * FROM payment where order_id = $1',[order.rows[i].id]);
+              order.rows[i].agent=null
+              order.rows[i].items=null
+              order.rows[i].payment=null
+              order.rows[i].agent=agent.rows[0]
+              order.rows[i].items=items.rows
+              order.rows[i].payment=payment[0]
+
+            }
+                
+                res.send(order.rows)
+                }catch (err) {
+                    client.query('ROLLBACK')
+                    console.log(err)
+                    // return err
+                    res.status(400).send({error: err.message})
+                  } finally {
+                    client.query('COMMIT')
+                    client.release()
+                  }
+                }
+

@@ -41,10 +41,13 @@ exports.insertTest = async function (pool, req, res) {
             console.log(req.query)
             client.query('START TRANSACTION')
             var tests=null
-            if(req.query.name){
+            if(req.query.id){
 
+              tests = await client.query("select * FROM tests where id = "+req.query.id+" ");
+            } else if(req.query.name) {
               tests = await client.query("select * FROM tests where Lower(name) like '%"+req.query.name.toLowerCase()+"%' ");
-            } else{
+            }           
+            else{
               tests= await client.query('select * FROM tests');
             }
                 
