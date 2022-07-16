@@ -1,3 +1,4 @@
+const uuid = require('uuid')
 const query = require('../queries/usersQuery.js')
 
 var jwt = require('jsonwebtoken');
@@ -30,8 +31,10 @@ exports.insertOrder = async function (pool, req, res) {
         breakup.push(item_breakup)
 
     }
-    const insertorder= await client.query('insert into orders (customer_id,customer_cred,customer_name,billing_address,order_amount,customer_order_id,agent_id) \
-         Values ($1,$2,$3,$4,$5,$6,$7) RETURNING *', [customer_id,customer_cred,customer_name,billing_address,order_amount,customer_order_id,1]);
+    const insertorder= await client.query('insert into orders (customer_id,customer_cred,customer_name,billing_address, \
+      order_amount,customer_order_id,agent_id,status) \
+         Values ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *', [customer_id,customer_cred,customer_name,billing_address,order_amount,
+          customer_order_id,1,"PROVISIONAL"]);
          console.log(insertorder)
          if (insertorder.rows.length > 0) {    
             for (var i in items){
@@ -39,7 +42,11 @@ exports.insertOrder = async function (pool, req, res) {
                  Values ($1,$2,$3) RETURNING *', [insertorder.rows[0].id,items[i].descriptor.name,items[i].price.value]);
 
             }    
-         }     
+         } 
+         let trnsactionId = uuid.v4();
+
+         insertPayment= await client.query('insert into payment (transaction_id,amount,order_id,status) \
+         Values ($1,$2,$3,$4) RETURNING *', [trnsactionId,order_amount,insertorder.rows[0].id,"PAYMENT_PENDING"]);
 
 
             var price = {
@@ -78,10 +85,13 @@ exports.insertOrder = async function (pool, req, res) {
             client.query('START TRANSACTION')
             var tests=null
             orders=[]
-            if(req.query.agent_id){
+            if(req.query.id){
+
+              order = await client.query('select * FROM orders where id = $1',[req.query.id]);
+            } else if(req.query.agent_id){
 
               order = await client.query('select * FROM orders where agent_id = $1',[req.query.agent_id]);
-            } else{
+            }else{
               order= await client.query('select * FROM orders');
             }
             console.log(order.rows)
