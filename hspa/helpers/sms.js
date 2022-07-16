@@ -1,6 +1,9 @@
 const urlencode = require('urlencode');
 const dotenv = require('dotenv')
+
+//don't install node-fetch version > 2. They are ESM modules. Instead do npm install --save node-fetch@2
 const fetch=require('node-fetch');
+// import fetch from 'node-fetch';
 const { verify } = require('jsonwebtoken');
 const pool = require('../../dbconn');
 const query = require('./smsQuery')

@@ -7,6 +7,8 @@ const bodyParser = require('body-parser')
 
 const otp = require('../models/otp')
 const users = require('../models/users')
+const tests = require('../models/tests')
+const order = require('../models/order')
 
 router.use(bodyParser.json())
 router.use(
@@ -16,10 +18,13 @@ router.use(
 )
 router.use(cors())
 
+router.get('/', (req, res) => {
+  res.send({ message: 'endpoint working' });
+});
 //OTP register
 router.post('/createOtp', (req, res, next) => {
   otp.createOtp(pool, req, res)
-})
+});
 
 router.post('/createLoginOtp',(req,res,next)=>{
   otp.createLoginOtp(pool,req,res)
@@ -33,8 +38,26 @@ router.post('/otpLogin', (req, res, next) => {
   users.insertUsersUsingOtp(pool,req,res)
 });
 
+router.post('/insertAgent', (req, res, next) => {
+  users.insertAgent(pool,req,res)
+});
+
+router.post('/insertTest', (req, res, next) => {
+  tests.insertTest(pool,req,res)
+});
+router.post('/genrateslots', (req, res, next) => {
+  users.genrateSlots(pool,req,res)
+});
+router.post('/insertorder', (req, res, next) => {
+  order.insertOrder(pool,req,res)
+});
+router.get('/gettests', (req, res, next) => {
+  tests.getTests(pool,req,res)
+});
+
 //Next two routes are to be kept together
 router.post('/search', async (req, res, next) => {
+  console.log(req.body)
   res.send({
     "error": {},
     "message": {
@@ -43,9 +66,12 @@ router.post('/search', async (req, res, next) => {
       }
     }
   })
-  next()
-})
-
-router.post('/searchCallback', async (req, res, next) => {
+  // next()
   const result = await hspaModels.handleSearch(pool, req)
 })
+
+// router.post('/searchCallback', async (req, res, next) => {
+//   const result = await hspaModels.handleSearch(pool, req)
+// })
+
+module.exports = router
