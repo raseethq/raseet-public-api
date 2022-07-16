@@ -9,6 +9,7 @@ const PORT = process.env.PUBLIC_API_PORT;
 
 //imports
 const hspaRoutes = require('./hspa/routes/hspaRoutes')
+const euaRoutes = require('./eua/routes/euaRoutes')
 // pool takes the object above -config- as parameter
 const pool = require('./dbconn')
 const app = express();
@@ -25,6 +26,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use('/hspa', hspaRoutes)
+app.use('/eua', euaRoutes)
 
 app.get('/', (req, res) => {
   res.send({ message: 'endpoint working' });
