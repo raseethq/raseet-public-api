@@ -7,6 +7,8 @@ dotenv.config()
 
 const PORT = process.env.PUBLIC_API_PORT;
 
+//imports
+const hspaRoutes = require('./hspa/routes/hspaRoutes')
 // pool takes the object above -config- as parameter
 const pool = require('./dbconn')
 const app = express();
@@ -21,6 +23,8 @@ const corsOptions = {
     optionsSuccessStatus: 200,
 }
 app.use(cors(corsOptions));
+
+app.use('/hspa', hspaRoutes)
 
 app.get('/', (req, res) => {
   res.send({ message: 'endpoint working' });
