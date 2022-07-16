@@ -121,3 +121,42 @@ exports.insertOrder = async function (pool, req, res) {
                   }
                 }
 
+exports.getOrderstatus = async function (pool, req, res) {
+    data=[
+      {
+        previous_status:"PROVISIONAL",
+        current_status:"CONFIRMED"
+
+      },{
+        previous_status:"CONFIRMED",
+        current_status:"SAMPLE_COLLECTED"
+      },{
+        previous_status:"SAMPLE_COLLECTED",
+        current_status:"REPORTS_GENRATED"
+      }
+
+    ]
+    res.status(200).send(data)
+    
+        
+      }
+
+exports.updateOrderStatus = async function (pool, req, res) {
+  const client = await pool.connect()
+  try {
+    order_id = req.body.order_id
+    order_status = req.body.order_status
+    client.query('START TRANSACTION')
+
+      order = await client.query('update orders set status=$1 where id=$2',[order_status,order_id]);
+      res.status(200).send({"msg":"updated"})
+        }catch (err) {
+            client.query('ROLLBACK')
+            console.log(err)
+            // return err
+            res.status(400).send({error: err.message})
+          } finally {
+            client.query('COMMIT')
+            client.release()
+          }
+        }
