@@ -88,6 +88,7 @@ router.post('/search', async (req, res, next) => {
   // next()
 
   const result = await hspaModels.handleSearch(pool, req)
+  console.log(result)
 })
 
 router.post('/init', async (req, res, next) => {
