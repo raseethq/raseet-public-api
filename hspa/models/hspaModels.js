@@ -16,9 +16,9 @@ exports.handleSearch = async function (pool, req, res) {
   
   let context = req.body.context
 
-  context['provider_id'] = "raseet-com"
-  context['provider_uri'] = "http://api.raseet.com/hspa"
-  
+  context['provider_id'] = process.env.PROVIDER_ID
+  context['provider_uri'] = process.env.PROVIDER_URI
+
   return await fetch('http://121.242.73.120:8083/api/v1/on_search', {
     method: 'POST',
     body: JSON.stringify({"context": context, "message": resBody}),

@@ -29,5 +29,18 @@ router.post('/on_search', async (req, res, next) => {
     }
   })
 })
+
+router.post('/on_init', async (req, res, next) => {
+  // if (req.body.context.provider_id == 'raseet-com') 
+  // console.log(req.body)
+  res.send({
+    "error": {},
+    "message": {
+      "ack": {
+        "status": "ACK"
+      }
+    }
+  })
+})
   
 module.exports = router
