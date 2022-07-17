@@ -65,10 +65,26 @@ exports.insertTest = async function (pool, req, res) {
  
  exports.gatewaySearch = async function(pool, req, res) {
   const client = await pool.connect()
+  str="shiva path lab"
+  agent_name=null
+  item_name=null
+  pincode=null
+  if(req.body.message.intent.fulfillment.agent.name){
+    agent_name = req.body.message.intent.fulfillment.agent.name.toLowerCase()
+  }
+  
   if (req.body.message.intent.fulfillment.type!="DIAGNOSTIC")
   {
     res.status(400).send({error: "type not supported"})
   }
+  if (str.search(agent_name) === -1)
+  {
+    res.status(400).send([])
+  }
+  if(req.body.message.intent.item){
+    item_name = req.body.message.intent.item.descriptor.name.toLowerCase()
+  }
+
   var data = {
     "catalog": {
       "descriptor": {
@@ -79,7 +95,12 @@ exports.insertTest = async function (pool, req, res) {
   var items = []
   var fulfillments =[]
 
-  tests= await client.query('select * FROM tests left join instructions on tests.instruction=instructions.id');
+  if(item_name){
+    tests= await client.query("select * FROM tests left join instructions on tests.instruction=instructions.id \
+    where Lower(name) like '%"+item_name.toLowerCase()+"%'");
+  }else{
+    tests= await client.query('select * FROM tests left join instructions on tests.instruction=instructions.id');
+  }
   for (var i in tests.rows)
   {
     var item = {
