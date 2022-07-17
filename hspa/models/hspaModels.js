@@ -1,16 +1,43 @@
 const fetch=require('node-fetch');
+const uuid = require('uuid')
 
 exports.handleSearch = async function (pool, req, res) {
 
+  const url = process.env.PUBLIC_API_URL+"/hspa/gatewaySearch"
+  const resBody = await fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(req.body),
+    headers: {
+      'Content-Type': 'application/json'
+    }})
+    // .then(res => res.text())
+    .then(res => res.json())
+    // .catch(err => console.log(err))
+  
+  const context = {
+    "domain": "Health",
+    "country": "IND",
+    "city": "Noida",
+    "action": "on_search",
+    "timestamp": "2022-07-14T09:58:16.837097Z",
+    "core_version": "0.7.1",
+    "consumer_id": "raseet-com",
+    "consumer_uri": "http://api.raseet.com/eua",
+    "provider_id": "raseet-com",
+    "provider_uri": "http://api.raseet.com/hspa",
+    "transaction_id": uuid.v4(),
+    "message_id": uuid.v4()
+  }
   return await fetch('http://121.242.73.120:8083/api/v1/on_search', {
     method: 'POST',
-    body: JSON.stringify(jsonResponse2),
+    body: JSON.stringify({"context": context, "message": resBody}),
     headers: {
       'X-Gateway-Authorization': 'value',
       'Content-Type': 'application/json'
     }
   })
-  // .then(response => response.text()).then(res => console.log(res))
+  // .then(response => response.text())
+  // .then(res => console.log(res))
   // .catch(err => console.log(err))
   .then(response => response.json())
   const client = await pool.connect()

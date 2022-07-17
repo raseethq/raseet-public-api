@@ -72,7 +72,7 @@ router.post('/gatewaysearch', (req, res, next) => {
 });
 //Next two routes are to be kept together
 router.post('/search', async (req, res, next) => {
-  console.log(req.body)
+  // console.log(req.body)
   res.send({
     "error": {},
     "message": {
@@ -84,7 +84,6 @@ router.post('/search', async (req, res, next) => {
   // next()
 
   const result = await hspaModels.handleSearch(pool, req)
-  console.log(result)
 })
 
 // router.post('/searchCallback', async (req, res, next) => {

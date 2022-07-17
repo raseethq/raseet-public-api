@@ -65,7 +65,7 @@ exports.insertTest = async function (pool, req, res) {
  
  exports.gatewaySearch = async function(pool, req, res) {
   const client = await pool.connect()
-  if (req.body.intent.fulfillment.type!="DIAGNOSTIC")
+  if (req.body.message.intent.fulfillment.type!="DIAGNOSTIC")
   {
     res.status(400).send({error: "type not supported"})
   }
@@ -117,5 +117,5 @@ exports.insertTest = async function (pool, req, res) {
   data['items']=items
   data['fulfillments']=fulfillments
   
-  res.status(400).send(data)
+  res.status(200).send(data)
 }
