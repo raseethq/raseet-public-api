@@ -65,78 +65,89 @@ exports.insertTest = async function (pool, req, res) {
  
  exports.gatewaySearch = async function(pool, req, res) {
   const client = await pool.connect()
-  str="shiva path lab"
-  agent_name=null
-  item_name=null
-  pincode=null
-  if(req.body.message.intent.fulfillment.agent.name){
-    agent_name = req.body.message.intent.fulfillment.agent.name.toLowerCase()
-  }
-  
-  if (req.body.message.intent.fulfillment.type!="DIAGNOSTIC")
-  {
-    res.status(400).send({error: "type not supported"})
-  }
-  if (str.search(agent_name) === -1)
-  {
-    res.status(400).send([])
-  }
-  if(req.body.message.intent.item){
-    item_name = req.body.message.intent.item.descriptor.name.toLowerCase()
-  }
-
-  var data = {
-    "catalog": {
-      "descriptor": {
-        "name": "Raseet HSPA"
+  try {
+    str="shiva path lab"
+    agent_name=null
+    item_name=null
+    pincode=null
+    if (req.body.message.intent.fulfillment.agent) {
+      if(req.body.message.intent.fulfillment.agent.name){
+        agent_name = req.body.message.intent.fulfillment.agent.name.toLowerCase()
       }
-  }
-}
-  var items = []
-  var fulfillments =[]
-
-  if(item_name){
-    tests= await client.query("select * FROM tests left join instructions on tests.instruction=instructions.id \
-    where Lower(name) like '%"+item_name.toLowerCase()+"%'");
-  }else{
-    tests= await client.query('select * FROM tests left join instructions on tests.instruction=instructions.id');
-  }
-  for (var i in tests.rows)
-  {
-    var item = {
-      id:tests.rows[i].id,
-      "descriptor": {
-        "name": tests.rows[i].name
-      },
-      "fulfillment_id": "815a0394-1fd4-4466-b95e-7ebbe1fb3da4",
-        "price": {
-          "currency": "INR",
-          "value": tests.rows[i].price
-        },
-        "quantity": {
-          "available": "1"
-        },
-        "tags ": {
-          "@abdm/gov.in/instructions": tests.rows[i].desc
-        }
     }
-    var fulfillment={
-      "id": "815a0394-1fd4-4466-b95e-7ebbe1fb3da4",
-        "type": "DIAGNOSTIC",
-        "provider_id":1,
-        "agent": {
-          "id": "123123",
-          "name": "shiva path lab"
-        },
-        "tags ": {
-          "@abdm/gov.in/pincode": "201014"
-        }
+    if (req.body.message.intent.fulfillment.type!="DIAGNOSTIC")
+    {
+      // res.status(400).send({error: "type not supported"})
+      throw new Error('type not supported')
     }
-    items.push(item)
-    fulfillments.push(fulfillment)
-  }
-  data['items']=items
-  data['fulfillments']=fulfillments
+    if (agent_name) {
+      if (str.search(agent_name) === -1)
+      {
+        res.status(400).send([])
+      }
+    }
+    if(req.body.message.intent.item){
+      item_name = req.body.message.intent.item.descriptor.name.toLowerCase()
+    }
   
-  res.status(200).send(data)
+    var data = {
+      "catalog": {
+        "descriptor": {
+          "name": "Raseet HSPA"
+        }
+    }
+  }
+    var items = []
+    var fulfillments =[]
+  
+    if(item_name){
+      tests= await client.query("select * FROM tests left join instructions on tests.instruction=instructions.id \
+      where Lower(name) like '%"+item_name.toLowerCase()+"%'");
+    }else{
+      tests= await client.query('select * FROM tests left join instructions on tests.instruction=instructions.id');
+    }
+    for (var i in tests.rows)
+    {
+      var item = {
+        id:tests.rows[i].id,
+        "descriptor": {
+          "name": tests.rows[i].name
+        },
+        "fulfillment_id": "815a0394-1fd4-4466-b95e-7ebbe1fb3da4",
+          "price": {
+            "currency": "INR",
+            "value": tests.rows[i].price
+          },
+          "quantity": {
+            "available": "1"
+          },
+          "tags ": {
+            "@abdm/gov.in/instructions": tests.rows[i].desc
+          }
+      }
+      var fulfillment={
+        "id": "815a0394-1fd4-4466-b95e-7ebbe1fb3da4",
+          "type": "DIAGNOSTIC",
+          "provider_id":1,
+          "agent": {
+            "id": "123123",
+            "name": "shiva path lab"
+          },
+          "tags ": {
+            "@abdm/gov.in/pincode": "201014"
+          }
+      }
+      items.push(item)
+      fulfillments.push(fulfillment)
+    }
+    data['items']=items
+    data['fulfillments']=fulfillments
+    
+    res.status(200).send(data)
+  } catch (err) {
+    console.log(err)
+    res.status(400).send({error: err.message})
+  } finally {
+    client.release()
+  }
 }
