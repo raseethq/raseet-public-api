@@ -70,6 +70,9 @@ router.post('/updateorderstatus', (req, res, next) => {
 router.post('/gatewaysearch', (req, res, next) => {
   tests.gatewaySearch(pool,req,res)
 });
+router.post('/confirmorder', (req, res, next) => {
+  order.confirmOrder(pool,req,res)
+});
 //Next two routes are to be kept together
 router.post('/search', async (req, res, next) => {
   // console.log(req.body)
