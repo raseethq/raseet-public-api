@@ -19,59 +19,60 @@ exports.insertOrder = async function (pool, req, res) {
     var order_amount =0
     var breakup=[]
     ordercheck = await client.query('select * FROM orders where customer_order_id = $1',[customer_order_id]);
-    if(ordercheck.roes.length>0){
+    if(ordercheck.rows.length>0){
       res.send(data) 
-    }
-    for (var i in items)
-    {
-      console.log(items[i])
-        order_amount = order_amount+items[i].price.value
-        var item_breakup = {
-          title: items[i].descriptor.name,
-          price:{
-            value:items[i].price.value
-          }
-        }
-        breakup.push(item_breakup)
-
-    }
-    const insertorder= await client.query('insert into orders (customer_id,customer_cred,customer_name,billing_address, \
-      order_amount,customer_order_id,agent_id,status) \
-         Values ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *', [customer_id,customer_cred,customer_name,billing_address,order_amount,
-          customer_order_id,1,"PROVISIONAL"]);
-         console.log(insertorder)
-         if (insertorder.rows.length > 0) {    
-            for (var i in items){
-                await client.query('insert into order_items(order_id,tests_name,amount) \
-                 Values ($1,$2,$3) RETURNING *', [insertorder.rows[0].id,items[i].descriptor.name,items[i].price.value]);
-
-            }    
-         } 
-         let trnsactionId = uuid.v4();
-
-         insertPayment= await client.query('insert into payment (transaction_id,amount,order_id,status) \
-         Values ($1,$2,$3,$4) RETURNING *', [trnsactionId,order_amount,insertorder.rows[0].id,"PAYMENT_PENDING"]);
-
-
-            var price = {
-              "currency": "INR",
-               "value": order_amount
+    } else {
+      for (var i in items)
+      {
+        console.log(items[i])
+          order_amount = order_amount+items[i].price.value
+          var item_breakup = {
+            title: items[i].descriptor.name,
+            price:{
+              value:items[i].price.value
             }
-            
-            var quote={
-              price:price,
-              breakup:breakup,
-            }
-            var payment = {
-              uri: "https://api.bpp.com/pay?amt=100&txn_id=ksh87yriuro34iyr3p4&mode=upi&vpa=doctor@upi",
-              type: "ON-ORDER",
-              status: "NOT-PAID",
-              tl_method: null,
-              params: null
           }
-          data['quote']=quote
-          data['payment']=payment
-          res.send(data)   
+          breakup.push(item_breakup)
+  
+      }
+      const insertorder= await client.query('insert into orders (customer_id,customer_cred,customer_name,billing_address, \
+        order_amount,customer_order_id,agent_id,status) \
+           Values ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *', [customer_id,customer_cred,customer_name,billing_address,order_amount,
+            customer_order_id,1,"PROVISIONAL"]);
+           console.log(insertorder)
+           if (insertorder.rows.length > 0) {    
+              for (var i in items){
+                  await client.query('insert into order_items(order_id,tests_name,amount) \
+                   Values ($1,$2,$3) RETURNING *', [insertorder.rows[0].id,items[i].descriptor.name,items[i].price.value]);
+  
+              }    
+           } 
+           let trnsactionId = uuid.v4();
+  
+           insertPayment= await client.query('insert into payment (transaction_id,amount,order_id,status) \
+           Values ($1,$2,$3,$4) RETURNING *', [trnsactionId,order_amount,insertorder.rows[0].id,"PAYMENT_PENDING"]);
+  
+  
+              var price = {
+                "currency": "INR",
+                 "value": order_amount
+              }
+              
+              var quote={
+                price:price,
+                breakup:breakup,
+              }
+              var payment = {
+                uri: "https://api.bpp.com/pay?amt=100&txn_id=ksh87yriuro34iyr3p4&mode=upi&vpa=doctor@upi",
+                type: "ON-ORDER",
+                status: "NOT-PAID",
+                tl_method: null,
+                params: null
+            }
+            data['quote']=quote
+            data['payment']=payment
+            res.send(data)   
+    }
         }catch (err) {
             client.query('ROLLBACK')
             console.log(err)

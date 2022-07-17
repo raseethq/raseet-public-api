@@ -19,7 +19,33 @@ router.use(cors())
 
 router.post('/on_search', async (req, res, next) => {
   // if (req.body.context.provider_id == 'raseet-com') 
-  console.log(req.body)
+  // console.log(req.body)
+  res.send({
+    "error": {},
+    "message": {
+      "ack": {
+        "status": "ACK"
+      }
+    }
+  })
+})
+
+router.post('/on_init', async (req, res, next) => {
+  // if (req.body.context.provider_id == 'raseet-com') 
+  // console.log(req.body)
+  res.send({
+    "error": {},
+    "message": {
+      "ack": {
+        "status": "ACK"
+      }
+    }
+  })
+})
+
+router.post('/on_confirm', async (req, res, next) => {
+  // if (req.body.context.provider_id == 'raseet-com') 
+  // console.log(req.body)
   res.send({
     "error": {},
     "message": {

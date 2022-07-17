@@ -4,6 +4,8 @@ const pool = require('../../dbconn')
 const router = express.Router()
 const cors = require('cors')
 const bodyParser = require('body-parser')
+const url = require('url');
+const fetch = require('node-fetch')
 
 const otp = require('../models/otp')
 const users = require('../models/users')
@@ -75,7 +77,6 @@ router.post('/confirmorder', (req, res, next) => {
 });
 //Next two routes are to be kept together
 router.post('/search', async (req, res, next) => {
-  // console.log(req.body)
   res.send({
     "error": {},
     "message": {
@@ -87,6 +88,77 @@ router.post('/search', async (req, res, next) => {
   // next()
 
   const result = await hspaModels.handleSearch(pool, req)
+})
+
+router.post('/init', async (req, res, next) => {
+  console.log(req.body)
+  res.send({
+    "error": {},
+    "message": {
+      "ack": {
+        "status": "ACK"
+      }
+    }
+  })
+  req.body['order'] = req.body.message.order
+  req.body['customer'] = req.body.message.order.customer
+  const url = process.env.PUBLIC_API_URL+"/hspa/insertorder"
+  const resBody = await fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(req.body),
+    headers: {
+      'Content-Type': 'application/json'
+    }})
+    // .then(res => res.text())
+    .then(res => res.json())
+    // .catch(err => console.log(err))
+  
+  let context = req.body.context
+
+  context['provider_id'] = process.env.PROVIDER_ID
+  context['provider_uri'] = process.env.PROVIDER_URI
+
+  // const sendOnInit = 
+  fetch(`${req.body.context.consumer_uri}/on_init`, {
+    method: 'POST',
+    body: JSON.stringify({"context": context, "message": resBody})
+  }).then(res => res.json()).then(res => console.log(res))
+  .catch(err => console.log(err))
+})
+
+router.post('/confirm', async (req, res, next) => {
+  console.log(req.body)
+  res.send({
+    "error": {},
+    "message": {
+      "ack": {
+        "status": "ACK"
+      }
+    }
+  })
+  req.body['order'] = req.body.message.order
+  const url = process.env.PUBLIC_API_URL+"/hspa/confirmorder"
+  const resBody = await fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(req.body),
+    headers: {
+      'Content-Type': 'application/json'
+    }})
+    // .then(res => res.text())
+    .then(res => res.json())
+    // .catch(err => console.log(err))
+  
+  let context = req.body.context
+
+  context['provider_id'] = process.env.PROVIDER_ID
+  context['provider_uri'] = process.env.PROVIDER_URI
+
+  // const sendOnInit = 
+  fetch(`${req.body.context.consumer_uri}/on_init`, {
+    method: 'POST',
+    body: JSON.stringify({"context": context, "message": resBody})
+  }).then(res => res.json()).then(res => console.log(res))
+  .catch(err => console.log(err))
 })
 
 // router.post('/searchCallback', async (req, res, next) => {
