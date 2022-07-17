@@ -125,6 +125,7 @@ router.post('/init', async (req, res, next) => {
   
   var context = req.body.context
 
+  context['action'] = 'on_init'
   context['provider_id'] = process.env.PROVIDER_ID
   context['provider_uri'] = process.env.PROVIDER_URI
 
@@ -165,6 +166,7 @@ router.post('/confirm', async (req, res, next) => {
   
   var context = req.body.context
   
+  context['action'] = 'on_confirm'
   context['provider_id'] = process.env.PROVIDER_ID
   context['provider_uri'] = process.env.PROVIDER_URI
 
