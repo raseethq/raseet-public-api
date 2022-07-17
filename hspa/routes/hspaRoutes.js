@@ -83,6 +83,9 @@ router.post('/gatewaysearch', (req, res, next) => {
 router.post('/confirmorder', (req, res, next) => {
   order.confirmOrder(pool,req,res)
 });
+router.post('/orderpayment', (req, res, next) => {
+  order.orderPayment(pool,req,res)
+});
 //Next two routes are to be kept together
 router.post('/search', async (req, res, next) => {
   res.send({
