@@ -69,8 +69,8 @@ exports.insertOrder = async function (pool, req, res) {
                 tl_method: null,
                 params: null
             }
-            data['quote']=quote
-            data['payment']=payment
+            data['message']['order']['quote']=quote
+            data['message']['order']['payment']=payment
             res.send(data)   
     }
         }catch (err) {
@@ -188,8 +188,8 @@ exports.confirmOrder = async function (pool, req, res) {
               "vpa": "sana.bhatt@upi"
           }
           }
-            data['payment']=payment
-            data['state']="CONFIRMED"
+            data['message']['order']['payment']=payment
+            data['message']['order']['state']="CONFIRMED"
         }else{
           payment = await client.query('select * FROM payment where order_id = $1',[order.rows[0].id]);
           var payment = {
@@ -204,8 +204,8 @@ exports.confirmOrder = async function (pool, req, res) {
               "vpa": "sana.bhatt@upi"
           }
           }
-            data['payment']=payment
-            data['state']="PROVISIONAL"
+            data['message']['order']['payment']=payment
+            data['message']['order']['state']="PROVISIONAL"
 
 
         }
@@ -216,9 +216,9 @@ exports.confirmOrder = async function (pool, req, res) {
           console.log(err)
           // return err
           res.status(400).send({error: err.message})
-          } finally {
-            client.query('COMMIT')
-            client.release()
-             }
-           }
+      } finally {
+        client.query('COMMIT')
+        client.release()
+          }
+        }
         
