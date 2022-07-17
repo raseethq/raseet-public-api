@@ -40,6 +40,14 @@ router.get('/validateOtp',(req, res, next) => {
   otp.validateOtp(pool,req,res)
 });
 
+router.post('/createSampleCollectionOtp',(req,res,next)=>{
+  otp.createSampleCollectionOtp(pool,req,res)
+});
+
+router.get('/validateSampleCollectionOtp',(req, res, next) => {
+  otp.validateSampleCollectionOtp(pool,req,res)
+});
+
 router.post('/otpLogin', (req, res, next) => {
   users.insertUsersUsingOtp(pool,req,res)
 });
