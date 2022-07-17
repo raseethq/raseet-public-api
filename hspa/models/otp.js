@@ -273,3 +273,104 @@ exports.createLoginOtp=async function(pool,req,res){
       }
   })
 }
+
+exports.createSampleCollectionOtp=async function(pool,req,res) {
+    pool.connect(async function (err, client, done) {
+        if (err) {
+            console.log("Can not connect to the DB" + err);
+            res.status(400).send({error: err})
+        } else {
+            if (req.body.mobile_number && req.body.otp_type) {
+                try {
+                    const currentTime = Date.now()/1000
+                    const otpQuery =`SELECT o.id,o.mobile_number,o.otp,o.created_at,o.updated_at,o.expired_at,EXTRACT(epoch from last_sent_at),o.otp_type from otp o where o.mobile_number='${req.body.mobile_number}' and o.otp_type='${req.body.otp_type}';`
+                    const otpExists= await client.query(otpQuery);
+                    if (otpExists.rows.length === 0) {
+                        client.query(query.postQuery(req), function (err, result) {
+                            done();
+                            if (err) {
+                                console.log(err);
+                                res.status(400).send(err);
+                            }
+                            // mobileNumber = "7042046838"
+                
+                            
+                            // sendLoginOtpSMS(result.rows[0].otp, result.rows[0].mobile_number,userExist.rows[0].name)
+                            sendSMSfinal(pool,req,res,"Sample Collection OTP",{otp:result.rows[0].otp, number:result.rows[0].mobile_number,name: ' '})
+                            res.status(200).send({status: "success", message: "OTP has been been sent to your phone."});
+                        })
+                    } else if (currentTime - otpExists.rows[otpExists.rows.length-1].date_part > 10){
+                        client.query(query.updateQuery(req), function (err, result) {
+                            done();
+                            if (err) {
+                                console.log(err);
+                                res.status(400).send(err);
+                            }
+                            // mobileNumber = "7042046838"
+            
+                            // sendLoginOtpSMS(result.rows[0].otp, result.rows[0].mobile_number,userExist.rows[0].name)
+                            sendSMSfinal(pool,req,res,"Sample Collection OTP",{otp:result.rows[0].otp, number:result.rows[0].mobile_number,name: ' '})
+            
+                            res.status(200).send({status: "success", message: "OTP has been been sent to your phone."});
+                        })
+                    } else if (currentTime - otpExists.rows[otpExists.rows.length-1].date_part > 10){
+                        client.query(query.updateQuery(req), function (err, result) {
+                            done();
+                            if (err) {
+                                console.log(err);
+                                res.status(400).send(err);
+                            }
+                            // mobileNumber = "7042046838"
+                            // sendLoginOtpSMS(
+                            //     result.rows[0].otp,
+                            //     result.rows[0].mobile_number,
+                            //     userExist.rows[0].name
+                            // )
+                            sendSMSfinal(pool,req,res,"Sample Collection OTP",{otp:result.rows[0].otp, number:result.rows[0].mobile_number,name: ' '})
+      
+                            res.status(200).send({status: "success", message: "A new OTP has been sent to your phone."});
+                        })
+                    } else {
+                        done();
+                        res.status(200).send({status: "failure", error: "Please wait for 10 seconds."});
+                    }
+                } catch (err) {
+                    res.status(400).send({error: err})
+                }
+            } else {
+                done();
+                res.status(400).send({status: "failure", error: "Please enter a phone number."}); // user Exist
+            } 
+        }
+    })
+}
+
+exports.validateSampleCollectionOtp=async function(pool,req,res) {
+    const client = await pool.connect()
+    try {
+        pool.connect(function (err, client, done) {
+            if (err) {
+                console.log("Can not connect to the DB" + err);
+                throw new Error("Can not connect to the DB" + err)
+            } else {
+            client.query(query.getQuery(req), async function (err, result) {
+                if (err) {
+                    console.log(err)
+                    throw new Error(err)
+                } else {
+                    if (result.rows.length) {
+                        res.status(200).send({auth: true, message: "OTP verified.", data: result.rows[0]})
+                    } else {
+                        res.status(400).send({auth: false, error: "Wrong OTP"}) 
+                    }
+                }
+            })
+            }
+        })
+    } catch (err) {
+        console.log(err)
+        res.status(400).send({error: err.message})
+    } finally {
+        client.release()
+    }
+}
