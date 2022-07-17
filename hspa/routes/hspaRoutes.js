@@ -103,7 +103,7 @@ router.post('/search', async (req, res, next) => {
 })
 
 router.post('/init', async (req, res, next) => {
-  console.log(req.body)
+  // console.log(req.body)
   res.send({
     "error": {},
     "message": {
@@ -112,12 +112,10 @@ router.post('/init', async (req, res, next) => {
       }
     }
   })
-  req.body['order'] = req.body.message.order
-  req.body['customer'] = req.body.message.order.customer
   const url = process.env.PUBLIC_API_URL+"/hspa/insertorder"
   const resBody = await fetch(url, {
     method: 'POST',
-    body: JSON.stringify(req.body),
+    body: JSON.stringify(req.body.message),
     headers: {
       'Content-Type': 'application/json'
     }})
@@ -125,15 +123,17 @@ router.post('/init', async (req, res, next) => {
     .then(res => res.json())
     // .catch(err => console.log(err))
   
-  delete resBody.order
-  delete resBody.customer
-  resBody['context']['provider_id'] = process.env.PROVIDER_ID
-  resBody['context']['provider_uri'] = process.env.PROVIDER_URI
+  var context = req.body.context
+
+  context['provider_id'] = process.env.PROVIDER_ID
+  context['provider_uri'] = process.env.PROVIDER_URI
 
   // const sendOnInit = 
   fetch(`${req.body.context.consumer_uri}/on_init`, {
     method: 'POST',
-    body: JSON.stringify(resBody),
+    body: JSON.stringify({
+      "context": context, "message": resBody
+    }),
     headers: {
       'Content-Type': 'application/json'
     }
@@ -142,7 +142,7 @@ router.post('/init', async (req, res, next) => {
 })
 
 router.post('/confirm', async (req, res, next) => {
-  console.log(req.body)
+  // console.log(req.body)
   res.send({
     "error": {},
     "message": {
@@ -151,11 +151,11 @@ router.post('/confirm', async (req, res, next) => {
       }
     }
   })
-  req.body['order'] = req.body.message.order
+  // req.body['order'] = req.body.message.order
   const url = process.env.PUBLIC_API_URL+"/hspa/confirmorder"
   const resBody = await fetch(url, {
     method: 'POST',
-    body: JSON.stringify(req.body),
+    body: JSON.stringify(req.body.message),
     headers: {
       'Content-Type': 'application/json'
     }})
@@ -165,14 +165,15 @@ router.post('/confirm', async (req, res, next) => {
   
   var context = req.body.context
   
-  delete resBody['order']
-  resBody['context']['provider_id'] = process.env.PROVIDER_ID
-  resBody['context']['provider_uri'] = process.env.PROVIDER_URI
+  context['provider_id'] = process.env.PROVIDER_ID
+  context['provider_uri'] = process.env.PROVIDER_URI
 
   // const sendOnInit = 
   fetch(`${req.body.context.consumer_uri}/on_confirm`, {
     method: 'POST',
-    body: JSON.stringify(resBody),
+    body: JSON.stringify({
+      "context": context, "message": resBody
+    }),
     headers: {
       'Content-Type': 'application/json'
     }
