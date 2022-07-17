@@ -96,18 +96,22 @@ exports.genrateSlots = async function(pool, req, res) {
   try {
     client.query('START TRANSACTION')
     user_id = req.body.user_id
-    start_time = new Date()
-    end_time = new Date()
+    start_time = new Date(req.body.start_time)
+    end_time = new Date(req.body.end_time)
     intverval = 30
     slots = []
-  
-    do {
+    console.log(start_time)
+    console.log(end_time)
+    start_time = addMinutes(start_time,(30-start_time.getMinutes()%30))
+    while(start_time < end_time){
       slots.push(start_time)
-      start_time = start_time.setMinutes(start_time.getMinutes() + intverval);
-      console.log(start_time)
-  } while (start_time != end_time)
-  res.status(200).send(slots)
-
+      start_time = addMinutes(start_time,intverval);
+    }
+    for(i in slots){
+      const insertslots = await client.query('INSERT INTO agent_slots(agent_id, start_time, end_time) VALUES($1,$2,$3) \
+        RETURNING *', [user_id,slots[i], addMinutes(slots[i],intverval)])
+    }
+    res.status(200).send({"msg": "slots added"})
   } catch (err) {
     client.query('ROLLBACK')
     console.log(err)
@@ -117,4 +121,7 @@ exports.genrateSlots = async function(pool, req, res) {
     client.query('COMMIT')
     client.release()
   }
+}
+function addMinutes(date, minutes) {
+  return new Date(date.getTime() + minutes*60000);
 }

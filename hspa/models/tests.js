@@ -1,5 +1,5 @@
 const query = require('../queries/usersQuery.js')
-
+const uuid = require('uuid')
 var jwt = require('jsonwebtoken');
 
 exports.insertTest = async function (pool, req, res) {
@@ -66,13 +66,26 @@ exports.insertTest = async function (pool, req, res) {
  exports.gatewaySearch = async function(pool, req, res) {
   const client = await pool.connect()
   try {
+    search_type=req.body.search_type
     str="shiva path lab"
     agent_name=null
     item_name=null
     pincode=null
+    start_time=null
+    end_time=null
     if (req.body.message.intent.fulfillment.agent) {
       if(req.body.message.intent.fulfillment.agent.name){
         agent_name = req.body.message.intent.fulfillment.agent.name.toLowerCase()
+      }
+    }
+    if (req.body.message.intent.fulfillment.start) {
+      if(req.body.message.intent.fulfillment.start.time){
+        start_time = eq.body.message.intent.fulfillment.start.time
+      }
+    }
+    if (req.body.message.intent.fulfillment.end) {
+      if(req.body.message.intent.fulfillment.end.time){
+        end_time = eq.body.message.intent.fulfillment.end.time
       }
     }
     if (req.body.message.intent.fulfillment.type!="DIAGNOSTIC")
@@ -83,7 +96,7 @@ exports.insertTest = async function (pool, req, res) {
     if (agent_name) {
       if (str.search(agent_name) === -1)
       {
-        res.status(400).send([])
+        res.status(200).send([])
       }
     }
     if(req.body.message.intent.item){
@@ -99,6 +112,16 @@ exports.insertTest = async function (pool, req, res) {
   }
     var items = []
     var fulfillments =[]
+    var count = 1
+
+    if(start_time && end_time){
+      slots =await client.query("select * FROM agent_slots left join users on users.id = agent_slots.agent_id \
+      where start_time > $1 and end_time < $2 \
+          and order_id is null",[start_time,end_time]);
+      if(slots.rows.length=0){
+        res.status(200).send([])
+      }
+    }
   
     if(item_name){
       tests= await client.query("select * FROM tests left join instructions on tests.instruction=instructions.id \
@@ -106,14 +129,17 @@ exports.insertTest = async function (pool, req, res) {
     }else{
       tests= await client.query('select * FROM tests left join instructions on tests.instruction=instructions.id');
     }
+    if(search_type="GATEWAY"){
+
     for (var i in tests.rows)
     {
+      let fulfillment_id =  uuid.v4();
       var item = {
         id:tests.rows[i].id,
         "descriptor": {
           "name": tests.rows[i].name
         },
-        "fulfillment_id": "815a0394-1fd4-4466-b95e-7ebbe1fb3da4",
+        "fulfillment_id": fulfillment_id,
           "price": {
             "currency": "INR",
             "value": tests.rows[i].price
@@ -126,8 +152,8 @@ exports.insertTest = async function (pool, req, res) {
           }
       }
       var fulfillment={
-        "id": "815a0394-1fd4-4466-b95e-7ebbe1fb3da4",
-          "type": "DIAGNOSTIC",
+        "id": fulfillment_id,
+          "type": tests.rows[i].diagnostic_type,
           "provider_id":1,
           "agent": {
             "id": "123123",
@@ -140,6 +166,56 @@ exports.insertTest = async function (pool, req, res) {
       items.push(item)
       fulfillments.push(fulfillment)
     }
+    } else if(search_type="HSPA"){
+      for (var i in tests.rows)
+      {
+        for(var j in slots){
+        if(slotsrows[j].agent_type=tests.rows[i].diagnostic_type)
+        {
+
+        let fulfillment_id =  uuid.v4();
+        var item = {
+          id:count,
+          "descriptor": {
+            "name": tests.rows[i].name
+          },
+          "fulfillment_id": fulfillment_id,
+            "price": {
+              "currency": "INR",
+              "value": tests.rows[i].price
+            },
+            "quantity": {
+              "available": "1"
+            },
+            "tags ": {
+              "@abdm/gov.in/instructions": tests.rows[i].desc
+            }
+        }
+        var fulfillment={
+          "id": fulfillment_id,
+            "type": tests.rows[i].diagnostic_type,
+            "provider_id":1,
+            "agent": {
+              "id": "123123",
+              "name": "shiva path lab"
+            },
+            "tags ": {
+              "@abdm/gov.in/pincode": "201014"
+            },
+            "start":{
+              "time":slots.rows[j].start_time
+            },"end":{
+              "time":slots.rows[j].end_time
+            }
+        }
+        items.push(item)
+        fulfillments.push(fulfillment)
+        count=count+1
+      }
+      }
+
+    }
+    
     data['items']=items
     data['fulfillments']=fulfillments
     
