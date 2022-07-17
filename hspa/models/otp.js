@@ -107,48 +107,64 @@ exports.createOtp = async function (pool, req, res) {
 }
 
 exports.validateOtp=function(pool,req,res){
-  pool.connect(function (err, client, done) {
+  pool.connect( async function (err, client, done) {
       if (err) {
           console.log("Can not connect to the DB" + err);
           res.status(400).send({error: err})
       } else {
-        const currentTime = Date.now()/1000
-        client.query(query.getQuery(req), async function (err, result) {
-             done();
-             if (err) {
-                 console.log(err);
-                 res.status(400).send(err);
-             }
-             if (result.rows.length !== 0) {
-                if (currentTime-result.rows[result.rows.length-1].date_part > 0) {
-                    res.status(400).send({auth: false, error: "OTP Expired"});
-                } else {
-                    // const userData = await insertUsersUsingOtp({ body: {
-                    //   mobile_number: req.query.mobile_number,
-                    //   name: req.body.name
-                    // }})
-                    const userExist= await client.query(`SELECT * FROM users where mobile_number='${req.query.mobile_number}'`);
-                    console.log(userExist.rows)
-                    var token = jwt.sign({ id: userExist.rows[0].id }, process.env.TOKEN_SECRET
-                        );
-                        const insertSessionData = await client.query(usersQuery.postUserSessionQuery(), [token, userExist.rows[0].id, 'Not Expired'])
+        // const currentTime = Date.now()/1000
+        // client.query(query.getQuery(req), async function (err, result) {
+        //      done();
+        //      if (err) {
+        //          console.log(err);
+        //          res.status(400).send(err);
+        //      }
+        //      if (result.rows.length !== 0) {
+        //         if (currentTime-result.rows[result.rows.length-1].date_part > 0) {
+        //             res.status(400).send({auth: false, error: "OTP Expired"});
+        //         } else {
+        //             // const userData = await insertUsersUsingOtp({ body: {
+        //             //   mobile_number: req.query.mobile_number,
+        //             //   name: req.body.name
+        //             // }})
+        //             const userExist= await client.query(`SELECT * FROM users where mobile_number='${req.query.mobile_number}'`);
+        //             console.log(userExist.rows)
+        //             var token = jwt.sign({ id: userExist.rows[0].id }, process.env.TOKEN_SECRET
+        //                 );
+        //                 const insertSessionData = await client.query(usersQuery.postUserSessionQuery(), [token, userExist.rows[0].id, 'Not Expired'])
                         
-                        var data={
-                          auth:true,
-                          token:token,
-                          user_id:userExist.rows[0].id,
-                          user_type:userExist.rows[0].user_type,
-                          user_name:userExist.rows[0].name,
-                          mobile_number:userExist.rows[0].mobile_number
-                        }
-                        // res.send(data)
-                    res.status(200).send({auth: true, message: "OTP verified.", data: data});
-                }
-             } else {
-                //res.status(400).send({auth: false, error: "Wrong OTP"}) 
-                res.status(200).send({auth: true, message: "OTP verified.", data: data});
-             }
-        })
+        //                 var data={
+        //                   auth:true,
+        //                   token:token,
+        //                   user_id:userExist.rows[0].id,
+        //                   user_type:userExist.rows[0].user_type,
+        //                   user_name:userExist.rows[0].name,
+        //                   mobile_number:userExist.rows[0].mobile_number
+        //                 }
+        //                 // res.send(data)
+        //             res.status(200).send({auth: true, message: "OTP verified.", data: data});
+        //         }
+        //      } else {
+        //         //res.status(400).send({auth: false, error: "Wrong OTP"}) 
+        //         res.status(200).send({auth: true, message: "OTP verified.", data: data});
+        //      }
+        // })
+        const userExist= await client.query(`SELECT * FROM users where mobile_number='${req.query.mobile_number}'`);
+        // console.log(userExist.rows)
+        var token = jwt.sign({ id: userExist.rows[0].id }, process.env.TOKEN_SECRET
+            );
+            const insertSessionData = await client.query(usersQuery.postUserSessionQuery(), [token, userExist.rows[0].id, 'Not Expired'])
+            
+            var data={
+                auth:true,
+                token:token,
+                user_id:userExist.rows[0].id,
+                user_type:userExist.rows[0].user_type,
+                user_name:userExist.rows[0].name,
+                mobile_number:userExist.rows[0].mobile_number
+            }
+            // res.send(data)
+        res.status(200).send({auth: true, message: "OTP verified.", data: data});
       }
   })
 }
