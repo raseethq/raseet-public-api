@@ -14,20 +14,11 @@ exports.handleSearch = async function (pool, req, res) {
     .then(res => res.json())
     // .catch(err => console.log(err))
   
-  const context = {
-    "domain": "Health",
-    "country": "IND",
-    "city": "Noida",
-    "action": "on_search",
-    "timestamp": "2022-07-14T09:58:16.837097Z",
-    "core_version": "0.7.1",
-    "consumer_id": "raseet-com",
-    "consumer_uri": "http://api.raseet.com/eua",
-    "provider_id": "raseet-com",
-    "provider_uri": "http://api.raseet.com/hspa",
-    "transaction_id": uuid.v4(),
-    "message_id": uuid.v4()
-  }
+  let context = req.body.context
+
+  context['provider_id'] = "raseet-com"
+  context['provider_uri'] = "http://api.raseet.com/hspa"
+  
   return await fetch('http://121.242.73.120:8083/api/v1/on_search', {
     method: 'POST',
     body: JSON.stringify({"context": context, "message": resBody}),

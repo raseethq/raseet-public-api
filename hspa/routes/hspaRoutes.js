@@ -4,6 +4,7 @@ const pool = require('../../dbconn')
 const router = express.Router()
 const cors = require('cors')
 const bodyParser = require('body-parser')
+const url = require('url');
 
 const otp = require('../models/otp')
 const users = require('../models/users')
@@ -75,7 +76,6 @@ router.post('/confirmorder', (req, res, next) => {
 });
 //Next two routes are to be kept together
 router.post('/search', async (req, res, next) => {
-  // console.log(req.body)
   res.send({
     "error": {},
     "message": {
