@@ -11,8 +11,8 @@ exports.insertOrder = async function (pool, req, res) {
     var customer_order_id = req.body.order.id
     console.log(req.body.order)
     var items = req.body.order.items
-    var customer_id = req.body.customer.id
-    var customer_cred = req.body.customer.cred
+    var customer_id = req.body.order.customer.id
+    var customer_cred = req.body.order.customer.cred
     var customer_name = req.body.order.billing.name
     var billing_address = req.body.order.billing
     var status = "PROVISIONAL"
@@ -38,7 +38,6 @@ exports.insertOrder = async function (pool, req, res) {
         order_amount,customer_order_id,agent_id,status) \
            Values ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *', [customer_id, customer_cred, customer_name, billing_address, order_amount,
         customer_order_id, 1, "PROVISIONAL"]);
-      console.log(insertorder)
       if (insertorder.rows.length > 0) {
         for (var i in items) {
           await client.query('insert into order_items(order_id,tests_name,amount) \
@@ -69,8 +68,8 @@ exports.insertOrder = async function (pool, req, res) {
         tl_method: null,
         params: null
       }
-      data['quote'] = quote
-      data['payment'] = payment
+      data.order['quote'] = quote
+      data.order['payment'] = payment
       res.send(data)
     }
   } catch (err) {
