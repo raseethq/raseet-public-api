@@ -4,6 +4,7 @@ const pool = require('../../dbconn')
 const router = express.Router()
 const cors = require('cors')
 const bodyParser = require('body-parser')
+const order = require('../models/order')
 
 router.use(bodyParser.json())
 router.use(
@@ -62,6 +63,14 @@ router.post('/on_confirm', async (req, res, next) => {
 
   insertIntoDB('on_confirm', req.body, req.body.context.transaction_id)
 
+})
+
+router.post('/create_search', async (req, res, next) => {
+  order.startSearch(pool, req, res)
+})
+
+router.post('/poll_search', async (req, res, next) => {
+  order.pollSearch(pool, req, res)
 })
 
 router.get('/viewLogs', async (req, res, next) => {
