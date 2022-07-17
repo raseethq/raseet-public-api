@@ -18,6 +18,10 @@ exports.insertOrder = async function (pool, req, res) {
     var status = "PROVISIONAL"
     var order_amount =0
     var breakup=[]
+    ordercheck = await client.query('select * FROM orders where customer_order_id = $1',[customer_order_id]);
+    if(ordercheck.roes.length>0){
+      res.send(data) 
+    }
     for (var i in items)
     {
       console.log(items[i])
@@ -160,3 +164,60 @@ exports.updateOrderStatus = async function (pool, req, res) {
             client.release()
           }
         }
+
+exports.confirmOrder = async function (pool, req, res) {
+  const client = await pool.connect()
+    try {
+        data=req.body
+        client.query('START TRANSACTION')
+        var customer_order_id = req.body.order.id
+        order = await client.query('select * FROM orders where customer_order_id = $1',[customer_order_id]);
+        if (order.rows[0].status!='PROVISIONAL')
+        {
+          payment = await client.query('select * FROM payment where order_id = $1',[order.rows[0].id]);
+          var payment = {
+            uri: "https://api.bpp.com/pay?amt=100&txn_id=ksh87yriuro34iyr3p4&mode=upi&vpa=doctor@upi",
+            type: "ON-ORDER",
+            status: payment.rows[0].status,
+            tl_method: null,
+            params: {
+              "transaction_id": "abc128-riocn83920",
+              "amount": payment.rows[0].amount,
+              "mode": "UPI",
+              "vpa": "sana.bhatt@upi"
+          }
+          }
+            data['payment']=payment
+            data['state']="CONFIRMED"
+        }else{
+          payment = await client.query('select * FROM payment where order_id = $1',[order.rows[0].id]);
+          var payment = {
+            uri: "https://api.bpp.com/pay?amt=100&txn_id=ksh87yriuro34iyr3p4&mode=upi&vpa=doctor@upi",
+            type: "ON-ORDER",
+            status: payment.rows[0].status,
+            tl_method: null,
+            params: {
+              "transaction_id": "abc128-riocn83920",
+              "amount": payment.rows[0].amount,
+              "mode": "UPI",
+              "vpa": "sana.bhatt@upi"
+          }
+          }
+            data['payment']=payment
+            data['state']="PROVISIONAL"
+
+
+        }
+        
+       res.send(data)
+      }catch (err) {
+          client.query('ROLLBACK')
+          console.log(err)
+          // return err
+          res.status(400).send({error: err.message})
+          } finally {
+            client.query('COMMIT')
+            client.release()
+             }
+           }
+        
