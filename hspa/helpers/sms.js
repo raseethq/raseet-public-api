@@ -22,6 +22,11 @@ exports.sendSMSfinal= async function(pool,req,res,type,payload = {otp:0,number:0
     var encodedMessage = urlencode(msg);
 
     url = `https://enterprise.smsgupshup.com/GatewayAPI/rest?method=SendMessage&send_to=${payload.number}&msg=${encodedMessage}&msg_type=TEXT&mask=${sender}&userid=${gupshupUserId}&auth_scheme=plain&password=${gupshupPassword}&v=1.1&format=text`;
+  } else if (type === 'Sample Collection OTP') {
+    const msg = `Hi ${payload.name}, Your OTP is ${payload.otp}. This is valid for only 10 minutes and can be used only once. Wishing for your well being. RASEET`
+    var encodedMessage = urlencode(msg);
+
+    url = `https://enterprise.smsgupshup.com/GatewayAPI/rest?method=SendMessage&send_to=${payload.number}&msg=${encodedMessage}&msg_type=TEXT&mask=${sender}&userid=${gupshupUserId}&auth_scheme=plain&password=${gupshupPassword}&v=1.1&format=text`;
   }
   return fetch(url, {
     method: "GET",
