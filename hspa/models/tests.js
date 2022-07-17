@@ -69,7 +69,7 @@ exports.insertTest = async function (pool, req, res) {
   agent_name=null
   item_name=null
   pincode=null
-  if(req.body.message.intent.fulfillment.agent.name){
+  if(req.body.message.intent.fulfillment.agent){
     agent_name = req.body.message.intent.fulfillment.agent.name.toLowerCase()
   }
   
@@ -77,10 +77,12 @@ exports.insertTest = async function (pool, req, res) {
   {
     res.status(400).send({error: "type not supported"})
   }
+  if(agent_name){
   if (str.search(agent_name) === -1)
   {
     res.status(400).send([])
   }
+}
   if(req.body.message.intent.item){
     item_name = req.body.message.intent.item.descriptor.name.toLowerCase()
   }
