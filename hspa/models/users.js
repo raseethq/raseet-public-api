@@ -180,3 +180,24 @@ exports.getSlots = async function(pool, req, res) {
 function addMinutes(date, minutes) {
   return new Date(date.getTime() + minutes*60000);
 }
+
+exports.getAgents = async function(pool, req, res) {
+  const client = await pool.connect()
+  try {
+    client.query('START TRANSACTION')
+    const agent= await client.query("select * from users where user_type = 'Agent' and user_status = 'Active'")
+    res.status(200).send(agent.rows)
+
+  } catch (err) {
+    client.query('ROLLBACK')
+    console.log(err)
+    // return err
+    res.status(400).send({error: err.message})
+  } finally {
+    client.query('COMMIT')
+    client.release()
+  }
+}
+function addMinutes(date, minutes) {
+  return new Date(date.getTime() + minutes*60000);
+}

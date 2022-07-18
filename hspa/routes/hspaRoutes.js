@@ -89,6 +89,10 @@ router.post('/orderpayment', (req, res, next) => {
 router.get('/getslots', (req, res, next) => {
   users.getSlots(pool,req,res)
 });
+router.get('/getagents', (req, res, next) => {
+  users.getAgents(pool,req,res)
+});
+
 //Next two routes are to be kept together
 router.post('/search', async (req, res, next) => {
   res.send({
