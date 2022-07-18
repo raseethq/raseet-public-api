@@ -56,7 +56,7 @@ exports.insertOrder = async function (pool, req, res) {
       console.log(agent_fulfilment.type)
       start_time =  new Date(agent_fulfilment.start.time.timestamp)
       start_time = addMinutes(start_time,330)
-      end_time= new Date(agent_fulfilment.start.end.timestamp)
+      end_time= new Date(agent_fulfilment.end.time.timestamp)
       end_time = addMinutes(end_time,330)
       const slots = await client.query('select agent_slots.* from agent_slots left join users on users.id=agent_slots.agent_id where agent_slots.start_time = \
       $1 and agent_slots.end_time = $2 and users.agent_type = $3', [start_time,end_time, agent_fulfilment.type]);

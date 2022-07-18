@@ -87,8 +87,7 @@ exports.pollSearch = async function(pool, req, res) {
 
       for(var i in results.rows)
       {
-        console.log(results.rows[i].endpoint_data.message.catalog)
-        if(results.rows[i].endpoint_data.message.items){
+        if(results.rows[i].endpoint_data.message.catalog){
           console.log("abc")
         temp_items = results.rows[i].endpoint_data.message.catalog.items
         temp_fullfill = results.rows[i].endpoint_data.message.catalog.fulfillments
@@ -108,7 +107,7 @@ exports.pollSearch = async function(pool, req, res) {
                         tests[temp_items[j].name].name.providers[temp_fullfill[k].agent.name].type.push(temp_fullfill[k].type)
                       }else{
                         temp_type = [temp_fullfill[k].type]
-                        tests[temp_items[j].name].name.providers[temp_fullfill[k].agent.name]['type']=temp_type = [temp_fullfill[k].type]
+                        tests[temp_items[j].name].name.providers[temp_fullfill[k].agent.name]['type']=temp_type
                       }
                         
                     }else{
