@@ -3,7 +3,9 @@ const query = require('../queries/usersQuery.js')
 
 var jwt = require('jsonwebtoken');
 const { genrateSlots } = require('./users.js');
-
+function addMinutes(date, minutes) {
+  return new Date(date.getTime() + minutes*60000);
+}
 exports.insertOrder = async function (pool, req, res) {
   const client = await pool.connect()
   try {
@@ -23,6 +25,7 @@ exports.insertOrder = async function (pool, req, res) {
     var available_items=[]
     var agent_fulfilment = null
     var aloted_agent =1
+    console.log(fulfillments)
     ordercheck = await client.query('select * FROM orders where customer_order_id = $1', [customer_order_id]);
     if (ordercheck.rows.length > 0) {
       res.send([])
@@ -48,11 +51,15 @@ exports.insertOrder = async function (pool, req, res) {
         }
        }
       }
-      console.log(agent_fulfilment.start.time.timestamp)
+      console.log(agent_fulfilment)
       console.log(agent_fulfilment.end.time.timestamp)
       console.log(agent_fulfilment.type)
+      start_time =  new Date(agent_fulfilment.start.time.timestamp)
+      start_time = addMinutes(start_time,330)
+      end_time= new Date(agent_fulfilment.start.end.timestamp)
+      end_time = addMinutes(end_time,330)
       const slots = await client.query('select agent_slots.* from agent_slots left join users on users.id=agent_slots.agent_id where agent_slots.start_time = \
-      $1 and agent_slots.end_time = $2 and users.agent_type = $3', [agent_fulfilment.start.time.timestamp,agent_fulfilment.end.time.timestamp, agent_fulfilment.type]);
+      $1 and agent_slots.end_time = $2 and users.agent_type = $3', [start_time,end_time, agent_fulfilment.type]);
       if(slots.rows.length>0){
         aloted_agent=slots.rows[0].agent_id
       }
@@ -62,6 +69,8 @@ exports.insertOrder = async function (pool, req, res) {
            Values ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *', [customer_id, customer_cred, customer_name, billing_address, order_amount,
         customer_order_id, aloted_agent, "PROVISIONAL"]);
       if (insertorder.rows.length > 0) {
+        console.log(insertorder.rows)
+        console.log(slots.rows)
         await client.query('update agent_slots set order_id = $1 where id = $2', [insertorder.rows[0].id,slots.rows[0].id]);
         
         for (var i in available_items) {

@@ -17,7 +17,9 @@ const corsOptions = {
   optionsSuccessStatus: 200,
 }
 router.use(cors())
-
+router.get('/', (req, res) => {
+  res.send({ message: 'endpoint working' });
+});
 router.post('/on_search', async (req, res, next) => {
   // if (req.body.context.provider_id == 'raseet-com') 
   // console.log(req.body)

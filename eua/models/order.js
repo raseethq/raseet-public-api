@@ -78,14 +78,74 @@ exports.startSearch = async function(pool, req, res) {
 exports.pollSearch = async function(pool, req, res) {
   const client = await pool.connect()
   try {
-    const checkResponseInDB = await client.query(`SELECT * from eua_endpoint_logs where transaction_id='${req.body.transaction_id}' and api_endpoint='on_search'`)
-    var testNames
-    if (checkResponseInDB.rows.length > 0) {
+    const request = await await client.query("SELECT * from eua_call_logs where request_id=$1",[req.body.request_id])
+    console.log(request.rows[0])
+    const results = await client.query("SELECT * from eua_endpoint_logs where transaction_id=$1 and \
+    api_endpoint='on_search'",[request.rows[0].transaction_id])
+    var tests={}
+    if (results.rows.length > 0) {
+
+      for(var i in results.rows)
+      {
+        console.log(results.rows[i].endpoint_data.message.catalog)
+        if(results.rows[i].endpoint_data.message.items){
+          console.log("abc")
+        temp_items = results.rows[i].endpoint_data.message.catalog.items
+        temp_fullfill = results.rows[i].endpoint_data.message.catalog.fulfillments
+        if (temp_items.length >0)
+        {
+          for(var j in temp_items){
+            for (var k in temp_fullfill){
+              if (temp_items[j].fulfillment_id==temp_fullfill[k].id)
+              {
+                console.log("abc")
+                if(request.rows[0].req_type=='gateway_search'){
+                  console.log("def")
+                  if (tests.hasOwnProperty(temp_items[j].name)){
+                    if(tests[temp_items[j].name].name.providers.hasOwnProperty(temp_fullfill[k].agent.name)){
+                      if(tests[temp_items[j].name].name.providers[temp_fullfill[k].agent.name].type)
+                      {
+                        tests[temp_items[j].name].name.providers[temp_fullfill[k].agent.name].type.push(temp_fullfill[k].type)
+                      }else{
+                        temp_type = [temp_fullfill[k].type]
+                        tests[temp_items[j].name].name.providers[temp_fullfill[k].agent.name]['type']=temp_type = [temp_fullfill[k].type]
+                      }
+                        
+                    }else{
+                      temp_type = [temp_fullfill[k].type]
+                      tests[temp_items[j].name].name.providers[temp_fullfill[k].agent.name]={
+                        "type":temp_type
+                      }
+                    }
+                  }else{
+  
+                    temp_type = [temp_fullfill[k].type]
+                    temp_agent = {
+                      type:[temp_type]
+                    }
+                   
+
+                      tests[temp_items[j].descriptor.name]={ "providers":{}}
+                      tests[temp_items[j].descriptor.name].providers[temp_fullfill[k].agent.name]=temp_agent
+                      
+                  }
+
+                }else if (request.rows[0].req_type=='hspa_search'){
 
 
+                }
+
+              }
+            }
+          }
+        }
+      }
+      }
+      res.status(200).send(tests)
     } else {
       res.status(200).send([])
     }
+    
   } catch (err) {
     console.log(err)
     res.status(400).send(err)
