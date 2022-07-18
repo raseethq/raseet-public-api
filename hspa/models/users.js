@@ -125,3 +125,58 @@ exports.genrateSlots = async function(pool, req, res) {
 function addMinutes(date, minutes) {
   return new Date(date.getTime() + minutes*60000);
 }
+
+
+exports.insertAgent = async function(pool, req, res) {
+  const client = await pool.connect()
+  try {
+    client.query('START TRANSACTION')
+    let primary_mobile_number = req.body.mobile_number.trim()
+    if (primary_mobile_number.length !== 10) {
+        throw new Error({message: 'mobile_number must be 10 digits', error: 'invalid mobile_number', data: {}})
+    } else {
+      const checkAgentData = await client.query(`SELECT * from users where mobile_number='${primary_mobile_number}'`)
+      if (checkAgentData.rows.length > 0) {
+        throw new Error('User with this mobile number already exists.')
+      } else {
+        const insertUserData = await client.query('INSERT INTO users(mobile_number, name, user_type, user_status) VALUES($1,$2,$3,$4) RETURNING *', [primary_mobile_number, req.body.name.trim(), 'Agent', 'Active'])
+        if (insertUserData.rows.length > 0) {
+          res.status(200).send(insertUserData.rows[0])
+        } else {
+          throw new Error('Could not add agent, try again later.')
+        }
+      }
+    }
+  } catch (err) {
+    client.query('ROLLBACK')
+    console.log(err)
+    // return err
+    res.status(400).send({error: err.message})
+  } finally {
+    client.query('COMMIT')
+    client.release()
+  }
+}
+
+exports.getSlots = async function(pool, req, res) {
+  const client = await pool.connect()
+  try {
+    client.query('START TRANSACTION')
+    user_id = req.query.agent_id
+    const slots_date= await client.query("select *,TO_CHAR(start_time, 'DD/MM/YYYY') as date from agent_slots \
+    where agent_id = $1", [user_id])
+    res.status(200).send(slots_date.rows)
+
+  } catch (err) {
+    client.query('ROLLBACK')
+    console.log(err)
+    // return err
+    res.status(400).send({error: err.message})
+  } finally {
+    client.query('COMMIT')
+    client.release()
+  }
+}
+function addMinutes(date, minutes) {
+  return new Date(date.getTime() + minutes*60000);
+}

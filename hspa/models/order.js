@@ -254,14 +254,14 @@ exports.orderPayment = async function (pool, req, res) {
   const client = await pool.connect()
   try {
     client.query('START TRANSACTION')
-    payment = await client.query('update payments set status=$1,customer_upi_id=$2 where  \
+    payment = await client.query('update payment set status=$1,customer_upi_id=$2 where  \
     transaction_id=$3 RETURNING *', [status,customer_upi_id,transaction_id]);
     if (status=="PAID")
     {
-      order = await client.query('update orders set status="CONFIRMED" where  \
-    id=$1 RETURNING *', [payment.rows[0].order_id]);
+      order = await client.query("update orders set status='CONFIRMED' where  \
+    id=$1 RETURNING *", [payment.rows[0].order_id]);
     }
-    res.status(200).send({ msg: sucess })
+    res.status(200).send({ "msg": "sucess" })
   } catch (err) {
     client.query('ROLLBACK')
     console.log(err)
