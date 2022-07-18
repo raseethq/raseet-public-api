@@ -3,6 +3,15 @@ const uuid = require('uuid')
 
 exports.handleSearch = async function (pool, req, res) {
 
+  var postUrl = ""
+  if (req.body.context.provider_uri) {
+    postUrl = req.body.context.consumer_uri + "/on_search"
+    req.body['search_type'] = "HSPA"
+  } else {
+    postUrl = 'http://121.242.73.120:8083/api/v1/on_search'
+    req.body['search_type'] = "GATEWAY"
+  }
+
   const url = process.env.PUBLIC_API_URL+"/hspa/gatewaySearch"
   const resBody = await fetch(url, {
     method: 'POST',
@@ -16,13 +25,7 @@ exports.handleSearch = async function (pool, req, res) {
   
   let context = req.body.context
 
-  var postUrl = ""
-  if (req.body.context.provider_uri) {
-    postUrl = req.body.context.consumer_uri + "/on_search"
-  } else {
-    postUrl = 'http://121.242.73.120:8083/api/v1/on_search'
-  }
-
+  context['action'] = 'on_search'
   context['provider_id'] = process.env.PROVIDER_ID
   context['provider_uri'] = process.env.PROVIDER_URI
 
