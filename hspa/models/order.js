@@ -2,6 +2,7 @@ const uuid = require('uuid')
 const query = require('../queries/usersQuery.js')
 
 var jwt = require('jsonwebtoken');
+const { genrateSlots } = require('./users.js');
 
 exports.insertOrder = async function (pool, req, res) {
   const client = await pool.connect()
@@ -11,6 +12,7 @@ exports.insertOrder = async function (pool, req, res) {
     var customer_order_id = req.body.order.id
     console.log(req.body.order)
     var items = req.body.order.items
+    var fulfillments = req.body.order.fulfillments
     var customer_id = req.body.order.customer.id
     var customer_cred = req.body.order.customer.cred
     var customer_name = req.body.order.billing.name
@@ -18,35 +20,58 @@ exports.insertOrder = async function (pool, req, res) {
     var status = "PROVISIONAL"
     var order_amount = 0
     var breakup = []
+    var available_items=[]
+    var agent_fulfilment = null
+    var aloted_agent =1
     ordercheck = await client.query('select * FROM orders where customer_order_id = $1', [customer_order_id]);
     if (ordercheck.rows.length > 0) {
-      res.send(data)
+      res.send([])
     } else {
       for (var i in items) {
-        console.log(items[i])
-        order_amount = order_amount + items[i].price.value
-        var item_breakup = {
-          title: items[i].descriptor.name,
-          price: {
-            value: items[i].price.value
-          }
+        for (var j in fulfillments){
+          if(items[i].fulfillment_id=fulfillments[j].id){
+              test_item = await client.query('select * from tests  order_items where name = $1 and diagnostic_type = \
+              $2', [items[i].descriptor.name,fulfillments[j].type]);
+              if(test_item.rows.length>0){
+                order_amount = order_amount + test_item.rows[0].price
+                var item_breakup = {
+                  title: items[i].descriptor.name,
+                  price: {
+                    value: test_item.rows[0].price
+                  }
+                }
+                breakup.push(item_breakup)
+                available_items.push(test_item.rows[0])
+                agent_fulfilment = fulfillments[j]
+              }
+             
         }
-        breakup.push(item_breakup)
-
+       }
       }
+      console.log(agent_fulfilment.start.time.timestamp)
+      console.log(agent_fulfilment.end.time.timestamp)
+      console.log(agent_fulfilment.type)
+      const slots = await client.query('select agent_slots.* from agent_slots left join users on users.id=agent_slots.agent_id where agent_slots.start_time = \
+      $1 and agent_slots.end_time = $2 and users.agent_type = $3', [agent_fulfilment.start.time.timestamp,agent_fulfilment.end.time.timestamp, agent_fulfilment.type]);
+      if(slots.rows.length>0){
+        aloted_agent=slots.rows[0].agent_id
+      }
+      console.log(slots.rows)
       const insertorder = await client.query('insert into orders (customer_id,customer_cred,customer_name,billing_address, \
         order_amount,customer_order_id,agent_id,status) \
            Values ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *', [customer_id, customer_cred, customer_name, billing_address, order_amount,
-        customer_order_id, 1, "PROVISIONAL"]);
+        customer_order_id, aloted_agent, "PROVISIONAL"]);
       if (insertorder.rows.length > 0) {
-        for (var i in items) {
+        await client.query('update agent_slots set order_id = $1 where id = $2', [insertorder.rows[0].id,slots.rows[0].id]);
+        
+        for (var i in available_items) {
           await client.query('insert into order_items(order_id,tests_name,amount) \
-                   Values ($1,$2,$3) RETURNING *', [insertorder.rows[0].id, items[i].descriptor.name, items[i].price.value]);
+                   Values ($1,$2,$3) RETURNING *', [insertorder.rows[0].id, available_items[i].name, available_items[i].price]);
 
         }
       }
       let trnsactionId = uuid.v4();
-      let payment_link = "hspa.raseet.com/payment/order?transaction_id=" + trnsactionId + "&?amt=" + order_amount + "mode=upi&vpa=doctor@upi"
+      let payment_link = "http://hspa.raseet.com/payment/order?transaction_id=" + trnsactionId + "&amt=" + order_amount + "mode=upi&vpa=doctor@upi"
 
       insertPayment = await client.query('insert into payment (transaction_id,amount,order_id,status,payment_link) \
            Values ($1,$2,$3,$4,$5) RETURNING *', [trnsactionId, order_amount, insertorder.rows[0].id, "PAYMENT_PENDING", payment_link]);
@@ -103,12 +128,14 @@ exports.getOrders = async function (pool, req, res) {
       agent = await client.query('select * FROM users where id = $1', [order.rows[i].agent_id]);
       items = await client.query('select * FROM order_items where order_id = $1', [order.rows[i].id]);
       payment = await client.query('select * FROM payment where order_id = $1', [order.rows[i].id]);
+      slot = await client.query('select * FROM agent_slots where order_id = $1', [order.rows[i].id]);
       order.rows[i].agent = null
       order.rows[i].items = null
       order.rows[i].payment = null
       order.rows[i].agent = agent.rows[0]
       order.rows[i].items = items.rows
       order.rows[i].payment = payment[0]
+      order.rows[i].slot = slot.rows[0]
 
     }
 
@@ -190,7 +217,7 @@ exports.confirmOrder = async function (pool, req, res) {
     } else {
       payment = await client.query('select * FROM payment where order_id = $1', [order.rows[0].id]);
       var payment = {
-        uri: "https://api.bpp.com/pay?amt=100&txn_id=ksh87yriuro34iyr3p4&mode=upi&vpa=doctor@upi",
+        uri: payment.rows[0].payment_link,
         type: "ON-ORDER",
         status: payment.rows[0].status,
         tl_method: null,

@@ -88,13 +88,13 @@ exports.gatewaySearch = async function (pool, req, res) {
         end_time = req.body.message.intent.fulfillment.end.time.timestamp
       }
     }
-    if (req.body.message.intent.fulfillment.type != "DIAGNOSTIC") {
+    if (!(req.body.message.intent.fulfillment.type == "DIAGNOSTIC" || req.body.message.intent.fulfillment.type == "HOME_DIAGNOSTIC")) {
       // res.status(400).send({error: "type not supported"})
       throw new Error('type not supported')
     }
     if (agent_name) {
       if (str.search(agent_name) === -1) {
-        res.status(200).send([])
+        throw new Error('No agent found supported')
       }
     }
     if (req.body.message.intent.item) {
@@ -123,7 +123,7 @@ exports.gatewaySearch = async function (pool, req, res) {
       where start_time > $1 and end_time < $2 \
           and order_id is null", [start_time, end_time]);
       if (slots.rows.length == 0) {
-        res.status(200).send([])
+        throw new Error('No slots found')
       }
     }
     if (item_name) {
