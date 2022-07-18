@@ -1,0 +1,307 @@
+{
+	"info": {
+		"_postman_id": "747e5f88-8b6c-4b07-aa20-75ede5bd0de7",
+		"name": "raseet-public-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11842751"
+	},
+	"item": [
+		{
+			"name": "/hspa/search",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"context\": {\r\n    \"domain\": \"nic2004:85111\",\r\n    \"country\": \"IND\",\r\n    \"city\": \"std:080\",\r\n    \"action\": \"search\",\r\n    \"timestamp\": \"2022-07-18T10:33:48.705082Z\",\r\n    \"core_version\": \"0.7.1\",\r\n    \"consumer_id\": \"raseet-com\",\r\n    \"consumer_uri\": \"http://api.raseet.com/eua\",\r\n    \"transaction_id\": \"bd3fedee-7b6c-404f-b999-29164de964ed\"\r\n  },\r\n  \"message\": {\r\n    \"intent\": {\r\n      \"fulfillment\": {\r\n        \"agent\": {\r\n          \"name\": \"shiva\"\r\n        },\r\n        \"type\": \"DIAGNOSTIC\",\r\n        \"start\": {\r\n          \"time\": {\r\n            \"timestamp\": \"2022-07-18T15:30:00.000Z\"\r\n          }\r\n        },\r\n        \"end\": {\r\n          \"time\": {\r\n            \"timestamp\": \"2022-07-18T18:00:00.000Z\"\r\n          }\r\n        }\r\n      },\r\n      \"item\": {\r\n        \"descriptor\": {\r\n          \"name\": \"H1bCA\"\r\n        }\r\n      }\r\n    }\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://api.raseet.com/hspa/search",
+					"protocol": "http",
+					"host": [
+						"api",
+						"raseet",
+						"com"
+					],
+					"path": [
+						"hspa",
+						"search"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "ACK",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"context\": {\r\n    \"domain\": \"nic2004:85111\",\r\n    \"country\": \"IND\",\r\n    \"city\": \"std:080\",\r\n    \"action\": \"search\",\r\n    \"timestamp\": \"2022-07-18T10:33:48.705082Z\",\r\n    \"core_version\": \"0.7.1\",\r\n    \"consumer_id\": \"raseet-com\",\r\n    \"consumer_uri\": \"http://api.raseet.com/eua\",\r\n    \"transaction_id\": \"bd3fedee-7b6c-404f-b999-29164de964ed\"\r\n  },\r\n  \"message\": {\r\n    \"intent\": {\r\n      \"fulfillment\": {\r\n        \"agent\": {\r\n          \"name\": \"shiva\"\r\n        },\r\n        \"type\": \"DIAGNOSTIC\",\r\n        \"start\": {\r\n          \"time\": {\r\n            \"timestamp\": \"2022-07-18T15:30:00.000Z\"\r\n          }\r\n        },\r\n        \"end\": {\r\n          \"time\": {\r\n            \"timestamp\": \"2022-07-18T18:00:00.000Z\"\r\n          }\r\n        }\r\n      },\r\n      \"item\": {\r\n        \"descriptor\": {\r\n          \"name\": \"H1bCA\"\r\n        }\r\n      }\r\n    }\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://api.raseet.com/hspa/search",
+							"protocol": "http",
+							"host": [
+								"api",
+								"raseet",
+								"com"
+							],
+							"path": [
+								"hspa",
+								"search"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "nginx/1.18.0 (Ubuntu)"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 18 Jul 2022 10:20:33 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "47"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"2f-neVHANQozZhuwrnWi1Vml4xnTrk\""
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"error\": {},\n    \"message\": {\n        \"ack\": {\n            \"status\": \"ACK\"\n        }\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "/hspa/init",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"context\": {\r\n    \"domain\": \"nic2004:85111\",\r\n    \"country\": \"IND\",\r\n    \"city\": \"std:080\",\r\n    \"action\": \"search\",\r\n    \"timestamp\": \"2022-07-18T10:33:48.705082Z\",\r\n    \"core_version\": \"0.7.1\",\r\n    \"consumer_id\": \"raseet-com\",\r\n    \"consumer_uri\": \"http://api.raseet.com/eua\",\r\n    \"transaction_id\": \"bd3fedee-7b6c-404f-b999-29164de964ed\"\r\n  },\r\n  \"message\": {\r\n    \"order\": {\r\n      \"id\": \"ef5310be-955e-4b7c-a1cb-01a0c8b1e18a\",\r\n      \"items\": [\r\n        {\r\n          \"id\": \"1\",\r\n          \"descriptor\": {\r\n            \"name\": \"Haemoglobin\"\r\n          },\r\n          \"fulfillment_id\": \"815a0394-1fd4-4466-b95e-7ebbe1fb3da4\",\r\n          \"price\": {\r\n            \"currency\": \"INR\",\r\n            \"value\": \"100\"\r\n          }\r\n        }\r\n      ],\r\n      \"billing\": {\r\n        \"name\": \"Ganesh Borse\",\r\n        \"address\": {\r\n          \"door\": \"21A\",\r\n          \"name\": \"ABC Apartments\",\r\n          \"locality\": \"Dwarka\",\r\n          \"city\": \"New Delhi\",\r\n          \"state\": \"New Delhi\",\r\n          \"country\": \"India\",\r\n          \"area_code\": \"110011\"\r\n        },\r\n        \"email\": \"\",\r\n        \"phone\": \"9595163508\"\r\n      },\r\n      \"fulfillments\": [\r\n        {\r\n          \"id\": \"815a0394-1fd4-4466-b95e-7ebbe1fb3da4\",\r\n          \"type\": \"DIAGNOSTIC\",\r\n          \"agent\": {\r\n            \"id\": \"123123\",\r\n            \"name\": \"shiva path lab\"\r\n          },\r\n          \"start\": {\r\n            \"time\": {\r\n              \"timestamp\": \"2022-07-17T20:00:00.000Z\"\r\n            }\r\n          },\r\n          \"end\": {\r\n            \"time\": {\r\n              \"timestamp\": \"2022-07-17T20:30:00.000Z\"\r\n            }\r\n          }\r\n        }\r\n      ],\r\n      \"customer\": {\r\n        \"id\": \"61-8787-9274-4422\",\r\n        \"cred\": \"ganeshborse@sbxabdm\"\r\n      }\r\n    }\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://api.raseet.com/hspa/init",
+					"protocol": "http",
+					"host": [
+						"api",
+						"raseet",
+						"com"
+					],
+					"path": [
+						"hspa",
+						"init"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "ACK",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"context\": {\r\n    \"domain\": \"nic2004:85111\",\r\n    \"country\": \"IND\",\r\n    \"city\": \"std:080\",\r\n    \"action\": \"search\",\r\n    \"timestamp\": \"2022-07-18T10:33:48.705082Z\",\r\n    \"core_version\": \"0.7.1\",\r\n    \"consumer_id\": \"raseet-com\",\r\n    \"consumer_uri\": \"http://api.raseet.com/eua\",\r\n    \"transaction_id\": \"bd3fedee-7b6c-404f-b999-29164de964ed\"\r\n  },\r\n  \"message\": {\r\n    \"order\": {\r\n      \"id\": \"ef5310be-955e-4b7c-a1cb-01a0c8b1e18a\",\r\n      \"items\": [\r\n        {\r\n          \"id\": \"1\",\r\n          \"descriptor\": {\r\n            \"name\": \"Haemoglobin\"\r\n          },\r\n          \"fulfillment_id\": \"815a0394-1fd4-4466-b95e-7ebbe1fb3da4\",\r\n          \"price\": {\r\n            \"currency\": \"INR\",\r\n            \"value\": \"100\"\r\n          }\r\n        }\r\n      ],\r\n      \"billing\": {\r\n        \"name\": \"Ganesh Borse\",\r\n        \"address\": {\r\n          \"door\": \"21A\",\r\n          \"name\": \"ABC Apartments\",\r\n          \"locality\": \"Dwarka\",\r\n          \"city\": \"New Delhi\",\r\n          \"state\": \"New Delhi\",\r\n          \"country\": \"India\",\r\n          \"area_code\": \"110011\"\r\n        },\r\n        \"email\": \"\",\r\n        \"phone\": \"9595163508\"\r\n      },\r\n      \"fulfillments\": [\r\n        {\r\n          \"id\": \"815a0394-1fd4-4466-b95e-7ebbe1fb3da4\",\r\n          \"type\": \"DIAGNOSTIC\",\r\n          \"agent\": {\r\n            \"id\": \"123123\",\r\n            \"name\": \"shiva path lab\"\r\n          },\r\n          \"start\": {\r\n            \"time\": {\r\n              \"timestamp\": \"2022-07-17T20:00:00.000Z\"\r\n            }\r\n          },\r\n          \"end\": {\r\n            \"time\": {\r\n              \"timestamp\": \"2022-07-17T20:30:00.000Z\"\r\n            }\r\n          }\r\n        }\r\n      ],\r\n      \"customer\": {\r\n        \"id\": \"61-8787-9274-4422\",\r\n        \"cred\": \"ganeshborse@sbxabdm\"\r\n      }\r\n    }\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://api.raseet.com/hspa/init",
+							"protocol": "http",
+							"host": [
+								"api",
+								"raseet",
+								"com"
+							],
+							"path": [
+								"hspa",
+								"init"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "nginx/1.18.0 (Ubuntu)"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 18 Jul 2022 10:21:13 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "47"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"2f-neVHANQozZhuwrnWi1Vml4xnTrk\""
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"error\": {},\n    \"message\": {\n        \"ack\": {\n            \"status\": \"ACK\"\n        }\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "/hspa/confirm",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"context\": {\r\n    \"domain\": \"nic2004:85111\",\r\n    \"country\": \"IND\",\r\n    \"city\": \"std:080\",\r\n    \"action\": \"search\",\r\n    \"timestamp\": \"2022-07-18T10:33:48.705082Z\",\r\n    \"core_version\": \"0.7.1\",\r\n    \"consumer_id\": \"raseet-com\",\r\n    \"consumer_uri\": \"http://api.raseet.com/eua\",\r\n    \"transaction_id\": \"bd3fedee-7b6c-404f-b999-29164de964ed\"\r\n  },\r\n  \"message\": {\r\n    \"order\": {\r\n      \"id\": \"ef5310be-955e-4b7c-a1cb-01a0c8b1e18a\",\r\n      \"items\": [\r\n        {\r\n          \"id\": \"1\",\r\n          \"descriptor\": {\r\n            \"name\": \"Hb1Ac\"\r\n          },\r\n          \"fulfillment_id\": \"e61a1aa1-c66d-4fcf-9467-85389c0f49b1\",\r\n          \"price\": {\r\n            \"currency\": \"INR\",\r\n            \"value\": \"1000\"\r\n          }\r\n        }\r\n      ],\r\n      \"fulfillment\": {\r\n        \"id\": \"e61a1aa1-c66d-4fcf-9467-85389c0f49b1\",\r\n        \"type\": \"DIAGNOSTIC\",\r\n        \"agent\": {\r\n          \"name\": \"shiva path lab\"\r\n        },\r\n        \"start\": {\r\n          \"time\": {\r\n            \"timestamp\": \"2022-06-10T12:30:00\"\r\n          }\r\n        },\r\n        \"end\": {\r\n          \"time\": {\r\n            \"timestamp\": \"2022-06-10T12:45:00\"\r\n          }\r\n        },\r\n        \"tags\": {\r\n          \"@abdm/gov.in/slot_id\": \"e61a1aa1-c66d-4fcf-9467-85389c0f49b1\"\r\n        }\r\n      },\r\n      \"customer\": {\r\n        \"id\": \"61-8787-9274-4422\",\r\n        \"cred\": \"ganeshborse@sbxabdm\"\r\n      },\r\n      \"quote\": {\r\n        \"price\": {\r\n          \"value\": \"01000\",\r\n          \"currency\": \"INR\"\r\n        },\r\n        \"breakup\": [\r\n          {\r\n            \"price\": {\r\n              \"value\": \"1000\"\r\n            },\r\n            \"title\": \"Hb1Ac\"\r\n          }\r\n        ]\r\n      },\r\n      \"billing\": {\r\n        \"name\": \"Ganesh Borse\",\r\n        \"email\": \"\",\r\n        \"phone\": \"9595163508\",\r\n        \"address\": {\r\n          \"city\": \"New Delhi\",\r\n          \"door\": \"21A\",\r\n          \"name\": \"ABC Apartments\",\r\n          \"state\": \"New Delhi\",\r\n          \"country\": \"India\",\r\n          \"locality\": \"Dwarka\",\r\n          \"area_code\": \"110011\"\r\n        }\r\n      }\r\n    }\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://api.raseet.com/hspa/confirm",
+					"protocol": "http",
+					"host": [
+						"api",
+						"raseet",
+						"com"
+					],
+					"path": [
+						"hspa",
+						"confirm"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "ACK",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"context\": {\r\n    \"domain\": \"nic2004:85111\",\r\n    \"country\": \"IND\",\r\n    \"city\": \"std:080\",\r\n    \"action\": \"search\",\r\n    \"timestamp\": \"2022-07-18T10:33:48.705082Z\",\r\n    \"core_version\": \"0.7.1\",\r\n    \"consumer_id\": \"raseet-com\",\r\n    \"consumer_uri\": \"http://api.raseet.com/eua\",\r\n    \"transaction_id\": \"bd3fedee-7b6c-404f-b999-29164de964ed\"\r\n  },\r\n  \"message\": {\r\n    \"order\": {\r\n      \"id\": \"ef5310be-955e-4b7c-a1cb-01a0c8b1e18a\",\r\n      \"items\": [\r\n        {\r\n          \"id\": \"1\",\r\n          \"descriptor\": {\r\n            \"name\": \"Hb1Ac\"\r\n          },\r\n          \"fulfillment_id\": \"e61a1aa1-c66d-4fcf-9467-85389c0f49b1\",\r\n          \"price\": {\r\n            \"currency\": \"INR\",\r\n            \"value\": \"1000\"\r\n          }\r\n        }\r\n      ],\r\n      \"fulfillment\": {\r\n        \"id\": \"e61a1aa1-c66d-4fcf-9467-85389c0f49b1\",\r\n        \"type\": \"DIAGNOSTIC\",\r\n        \"agent\": {\r\n          \"name\": \"shiva path lab\"\r\n        },\r\n        \"start\": {\r\n          \"time\": {\r\n            \"timestamp\": \"2022-06-10T12:30:00\"\r\n          }\r\n        },\r\n        \"end\": {\r\n          \"time\": {\r\n            \"timestamp\": \"2022-06-10T12:45:00\"\r\n          }\r\n        },\r\n        \"tags\": {\r\n          \"@abdm/gov.in/slot_id\": \"e61a1aa1-c66d-4fcf-9467-85389c0f49b1\"\r\n        }\r\n      },\r\n      \"customer\": {\r\n        \"id\": \"61-8787-9274-4422\",\r\n        \"cred\": \"ganeshborse@sbxabdm\"\r\n      },\r\n      \"quote\": {\r\n        \"price\": {\r\n          \"value\": \"01000\",\r\n          \"currency\": \"INR\"\r\n        },\r\n        \"breakup\": [\r\n          {\r\n            \"price\": {\r\n              \"value\": \"1000\"\r\n            },\r\n            \"title\": \"Hb1Ac\"\r\n          }\r\n        ]\r\n      },\r\n      \"billing\": {\r\n        \"name\": \"Ganesh Borse\",\r\n        \"email\": \"\",\r\n        \"phone\": \"9595163508\",\r\n        \"address\": {\r\n          \"city\": \"New Delhi\",\r\n          \"door\": \"21A\",\r\n          \"name\": \"ABC Apartments\",\r\n          \"state\": \"New Delhi\",\r\n          \"country\": \"India\",\r\n          \"locality\": \"Dwarka\",\r\n          \"area_code\": \"110011\"\r\n        }\r\n      }\r\n    }\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://api.raseet.com/hspa/confirm",
+							"protocol": "http",
+							"host": [
+								"api",
+								"raseet",
+								"com"
+							],
+							"path": [
+								"hspa",
+								"confirm"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "nginx/1.18.0 (Ubuntu)"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 18 Jul 2022 10:23:16 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "47"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"2f-neVHANQozZhuwrnWi1Vml4xnTrk\""
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"error\": {},\n    \"message\": {\n        \"ack\": {\n            \"status\": \"ACK\"\n        }\n    }\n}"
+				}
+			]
+		}
+	]
+}
