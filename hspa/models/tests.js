@@ -144,24 +144,14 @@ exports.gatewaySearch = async function (pool, req, res) {
           "price": {
             "currency": "INR",
             "value": tests.rows[i].price
-          },
-          "quantity": {
-            "available": "1"
-          },
-          "tags ": {
-            "@abdm/gov.in/instructions": tests.rows[i].desc
           }
         }
         var fulfillment = {
           "id": fulfillment_id,
           "type": tests.rows[i].diagnostic_type,
-          "provider_id": 1,
           "agent": {
             "id": "123123",
             "name": "shiva path lab"
-          },
-          "tags ": {
-            "@abdm/gov.in/pincode": "201014"
           }
         }
         items.push(item)
@@ -184,24 +174,14 @@ exports.gatewaySearch = async function (pool, req, res) {
               "price": {
                 "currency": "INR",
                 "value": tests.rows[i].price
-              },
-              "quantity": {
-                "available": "1"
-              },
-              "tags ": {
-                "@abdm/gov.in/instructions": tests.rows[i].desc
               }
             }
             var fulfillment = {
               "id": fulfillment_id,
               "type": tests.rows[i].diagnostic_type,
-              "provider_id": 1,
               "agent": {
                 "id": "123123",
                 "name": "shiva path lab"
-              },
-              "tags ": {
-                "@abdm/gov.in/pincode": "201014"
               },
               "start": {
                 "time": slots.rows[j].start_time
@@ -216,8 +196,8 @@ exports.gatewaySearch = async function (pool, req, res) {
         }
 
       }}
-      data['items'] = items
-      data['fulfillments'] = fulfillments
+      data.catalog['items'] = items
+      data.catalog['fulfillments'] = fulfillments
 
       res.status(200).send(data)
     } catch (err) {
