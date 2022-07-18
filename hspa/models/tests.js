@@ -184,9 +184,13 @@ exports.gatewaySearch = async function (pool, req, res) {
                 "name": "shiva path lab"
               },
               "start": {
-                "time": slots.rows[j].start_time
+                "time": {
+                  "timestamp": slots.rows[j].start_time
+                }
               }, "end": {
-                "time": slots.rows[j].end_time
+                "time": {
+                  "timestamp": slots.rows[j].end_time
+                }
               }
             }
             items.push(item)
